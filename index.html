@@ -1,0 +1,686 @@
+< html>
+
+
+  
+  
+ 
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #e0c097 url('https://www.transparenttextures.com/patterns/cardboard.png');
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .card {
+      perspective: 1000px;
+      width: 300px;
+      height: 400px;
+      position: relative;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+.card-back {
+  background: #f5deb3;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.description {
+  max-height: 120px; /* Limit height for scroll/fade */
+  overflow: hidden;
+  position: relative;
+  filter: blur(5px);
+  transition: filter 0.5s ease;
+  margin-bottom: 1rem;
+}
+
+/* Only fade the text, not the whole container */
+.description.visible {
+  filter: none;
+}
+
+/* Add a fade effect at the bottom of the description */
+.description::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 30px;
+  width: 100%;
+  background: linear-gradient(to top, #f5deb3, transparent);
+  pointer-events: none;
+}
+
+
+    .copy-btn {
+      padding: 0.5rem;
+      background: #8b5e3c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    .copy-btn.enabled {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .popup {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #d2b48c;
+      border: 2px solid #8b5e3c;
+      padding: 1rem;
+      border-radius: 10px;
+      z-index: 999;
+      width: 300px;
+      text-align: center;
+      display: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #8b5e3c;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #fff;
+      animation: fillProgress 10s linear forwards;
+    }
+
+    @keyframes fillProgress {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
+    a {
+      color: #4b2e0e;
+      text-decoration: underline;
+    }
+
+.telegram-center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  z-index: 10;
+}
+
+.telegram-glow-btn {
+  display: inline-block;
+  padding: 6px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 8px rgba(183, 123, 55, 0.4), 0 0 16px rgba(183, 123, 55, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.4s ease;
+  position: relative;
+  text-decoration: none;
+}
+
+.telegram-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.telegram-glow-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(245, 184, 101, 0.3) 25%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  animation: pulse-wave-glow 3s infinite ease-out;
+  box-shadow: 0 0 10px rgba(245, 184, 101, 0.3);
+  filter: blur(0.5px);
+  z-index: -1;
+}
+
+@keyframes pulse-wave-glow {
+  0% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+.cardboard-header {
+  background: #d2b48c url('https://www.transparenttextures.com/patterns/cardboard.png');
+  border: 2px solid #8b5e3c;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  text-align: center;
+  
+  max-width: 800px;
+}
+
+.cardboard-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #4b2e0e;
+  text-shadow: 1px 1px 0 #fff5e1;
+}
+
+.cardboard-header p {
+  font-size: 1.1rem;
+  color: #5e3b1e;
+  margin-top: 0.5rem;
+}
+
+  </style>
+
+<header class="cardboard-header">
+  <h1>CHATGPT PROMT</h1>
+  <p>Discover powerful cinematic styles with a vintage twist</p>
+</header>
+
+
+  <div class="gallery">
+    <div class="card" data-description="Create a dramatic, high-contrast black-and-white portrait of the person in the uploaded image. Style the person as a strong, focused boxer wearing a fitted dark athletic t-shirt with fists wrapped in tape. Set the subject against a bold red background. Use cinematic lighting with deep shadows and strong highlights to emphasize muscle tone and facial expression. The overall mood should be intense, powerful, and artistic — inspired by vintage boxing posters.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh0_Hi9f7b5hZG8QpESPEpVccv6yjye2YBZ6fQspRkDXIUiNjUgkeAAuGeK1SOTIat-Qhk-4anS5877IsVBex9IgSLR2DO563cRU8A5xcpvIKQDZm7ykNtZ8M7LSTKQd0sH-QC21gt73BjETwam1GZYUqVuiZ-UppTLiL4KroCD4OF1YHYQf_0dKpIYt98/s1600/photo_2025-06-13_09-50-41.jpg" alt="Movie 1"/>
+        </div>
+        <div class="card-back">
+          <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-description="Cinematic fronthead shot of me
+standing holding my money heist
+mask covering half of my face giving
+Badass Looks or action , Wearing A
+red outfit from money heist series,
+People behind me running and
+scared, background with moody
+lightning 35mm film look Shallow
+depth of field, sharp focus on
+and show the people a Little bit.
+Ratio potrait 4:3">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEii3nAg56IvCm5N2BEtzRqu4mVeEG5H7-3R5oZj0Ph1bxM4BgrBWdBb6mA34gR9WQSzMUEyIeZPucSfN7_jEPVMsM5ScGSd-o9NZ_dA4OSdcg2fM_FD4dqID6kWtUgecNzcjIUqpJh9Yxdxb4_4-D2xyWk6OywftSSKaVHW7aZuM4-HXNtNuwC14Ck20xg/s1600/photo_2025-06-13_14-44-31.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-description="A hyper-realisticcinematic poster featuring a man in a sharp black suit with a vest, white shirt, and tie, long messy hair, slightly bruised and bloodied face, standing confidently in the center. The background is glowing with intense red neon lights in a circular arc, creating a dramatic and moody atmosphere.The lighting highlights the sharp details of the
+man's face and suit, adding depth and intensity. Inspired by the John Wick movie poster style. Image size 1080x1350px, face perfectly centered.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiq3CLrluk6FArdDCBswtLdbw9lcQ5zQYRtRo7pncMsLSGp5M3Xu-GFByPWwbNnu3CuMnhscz9Va_FcYEVUH6lOeQyVzvE9vQxLk0sEKiSJO8aDfj7qNDD-uHJAwmLyH6esMzYazALCATk-BpBGpMynDC7rK18d6w7mRB45oaDChFdmuU-Q67VPuHokjAc/s1600/photo_2025-06-13_15-01-55.jpg" alt="Movie 3"/>
+        </div>
+        <div class="card-back">
+   <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+ 
+<div class="card" data-description="An aerial cinematic shot of A young man
+[With the same face as uploded image]
+leaning coolly on the hood of a red
+Lamborghini Aventador on a luxury car studio,
+wearing a oversized premium off white T-shirt
+underneath a maroon color varsity jacket. I
+Moody lighting, Photorealistic, shallow depth
+of field, soft warm lighting, high-resolution
+DSLR quality, Hasselblad X2D 100C,
+cinematic tone, shallow depth of field, sharply
+focused on me. 4:5 aspect ratio.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjJbsPwt4D0SF4_NPhomHAXhgnzvClESLz2IPcCGP5Q9Us55xDNQF9LzzffS2f4vXa-1x9Fs4W3e9VwfiFtdz2F5uEGka0eNFX2T3liUFzwCgiMBYzoIzK66bre1hwT7WBzYeM9h1bTWa4fK5QusPXX6RK-6UtHMEnuZYHTQeCJrOIkcnYw9BdsGXdIXNc/s1600/photo_2025-06-01_13-58-07.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Cinematic overhead shot of me standing still a brick city sidesalk, wearing a dark oversized blazer, motion-blurred crowd rushes past around me moody lighting 35mm film look Shallow depth of field, sharp focus on me.
+Ration potrait 4:3">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjLNrwPjCYUKlVx-q8DAvOvkX_my1dTtC9okvPVuh9mBJQKKKJkpvurBIvoAd2A2tZPa-npCMkSl9Y1NgqgrxqCWd2Ibguj7E5Z31zmH5H0gJUYDO_abxPYCps1x_bOihQl0ZMrFpGxz-JIsyQMX2Kzrn_yr6XGIBLFyEJbxHm1fBDFkDwOdFx-aAn5y1I/s1600/photo_2025-06-13_15-18-35.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Transform this person into a scene from the Squid Game TV series. Keep the face exactly the same. Add a green tracksuit with a white number tag, dim indoor lighting with a dramatic and tense atmosphere, and background characters in similar outfits. Make it look like a cinematic shot from a survival game show, keeping facial expression and identity unchanged!">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOToqHAE89K2tlA_DTFBuAxuxbtaL38S4XGsx1Pdf98j7mVxguDpeLybH3dgyFgwo6A7eTSZx3CtBn9_vrmu98OTww9iAFtEKld5Suy_ZIA5hMgGED6ocH066v8OpW6a4BMfRemeuL406Ezcky0Bclg4b_yEKh8kUs8DxuqYHjNdWOYmHIqOHvchGGN_M/s1600/photo_2025-06-13_15-14-28.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Convert this image into A cinematic portrait
+of a man standing under a dramatic spotlight
+in a dark room. With the same face as uploded
+image. The man wears a patterned white shirt
+with black suit, sunglass, and has a confident,
+intense expression. His hands are in his
+pockets, and the lighting casts deep shadows,
+emphasizing the contours of his face and
+body. The background is black, creating a ai">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBPtvJcYBTJi79BU6AuQLtGxsdPC74Kxd0J124OljicbEheurV3Gd2T0L6MMpXb9h_mKNhoGWTufSKGE039w8Bs2zPmCZ-AhHr572YHw9DzuvDQvqi5mZfNpwgsOotVDJoMWUw-ug3YD_B3FEXusD3frPywWYKarXJn8Vr1TA_xh7onw93GB4BiSSisRw/s1600/photo_2025-06-13_15-21-29.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="He has on formal eyeglasses luxury wristwatch. The background is a plain
+dark yellow. The photo has a motion blur
+effect with ghosted afterimages to the left and right, giving a sense of movement or vibration. Studio lighting, fashion editorial style.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjArZrlO1FRlovlraB6uq1sU-NjXOVm5YMOuKKqGH3Y66wFp8xYtTPp8dtanCEBblgK72HFftKOvEIDMnkYk9DoK_EBYrLAdtM9slp85wOwZnKjXj5ONtKdYWESJSAdBAxJg7pEc9WODWO7NMyX-SN-_r6k_Q6yFaRDlAhH1Gjg6ThqI2gDpJ0npKAENoU/s1600/photo_2025-06-13_15-24-50.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="A highly stylized portrait of same
+person in image with sharp features, flawless fair
+skin, wearing a black t-shirt, black sunglasses
+and standing against a bold red gradient
+background, confidently.
+The lighting is dramatic and cinematic,
+emphasizing his facial structure and giving a
+luxury fashion magazine vibe.
+Ultra-realistic,
+high-detail, editorial photography style.
+4K resolution, symmetrical composition, minimal
+background elements.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg0pPYfUrzhkQ0RYCy0SavE3vjM1AU64iPchqy5eMfl3WxF5p8vXRZWYMcVfPzln8IVW3MZCPSGkfDQIcaEdUZIR_9oKvnpxzbw2TuoXVcmaZMTO6OnPs7qxEH7XtJkxfA3kL8HxlEuXfu6M9JmhYiNMqphiS1Nb5sdiQkzItEOrsa64mXsTyVa5uoYKrQ/s1600/photo_2025-06-13_15-26-43.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Visualise me as A young man wearing
+drop shoulder t-shirt and baggy jeans
+confidently leaning against my
+customised BMW E46 M3. The car is
+modified and blue and silver paintjob is
+done modernly street racing aesthetic. I
+am in a middle of a busy Phaka city road
+where people are rushing in motion. The
+style is inspired bya street racing game
+Need for speed.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhVXFVcrpSBNmopD9yuYK0rs948o8kDwtMLaq_2_LhndfUE_Sk32Jdb3OdnIzCuBMMfjjmP7VXiRO4Mvptx3C7YTwO67CLoL8NVza5nxNKEjjjtbV8JpXmZFP3_SZ8U2EoGsQMPxdLYugfcPznpZ8CDk08g31nbErETa_ZKdHSvhuiQ5gd8uHYCDmIGF0Y/s1600/photo_2025-06-13_15-28-36.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="A stylish young man with tousled, Quiff Style black hair stands confidently in an outdoor setting during golden hour. He has a defined jawline, light freckled cheeks, and sharp features. He wears round vintage sunglasses and a textured light beige suit with a deep V-cut cream shirt underneath, unbuttoned to reveal a subtle pendant necklace. A crisp white pocket square sits neatly in his chest pocket. His hands rest casually in his pockets, exuding calm confidence. The background is softly blurred with silhouettes of elegantly dressed people, suggesting a high-end summer gathering or fashion event. The lighting is warm and cinematic, with golden sunlight gently backlighting his hair, creating a glowing halo effect. The mood is editorial and fashion-forward. Portrait ratio 4:3 with shallow depth of field and natural, moody lighting.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgkeooxbI4BnmgitVIL0oDWCFB5GKmPeqFk26zEQlCdj3oucVH54LfXyAixQw21TlnRfCaGZaisrBndpUwGDDuIu5NFuOroWgCH62ozQ9UO4p2RjSFstkDNS5AbTr0UAX3kKmMX-IYyGychay1oLdyqo3BqxIxqxc3l2IRd8n1HcU_IZDXyDQdQwF_rncc/s1600/photo_2025-06-13_16-28-45.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="A moody portrait of me with a short slight
+beard, wearing a white T-shirt, and a leather trendy black jacket. He's looking confident. The lighting is dark and atmospheric with a cinematic feel. There is a ghostly motion blur effect showing a duplicate of his face slightly to the left, glowing with soft red orange neon light. The background is minimal and dark olive
+green, giving a surreal, introspective mood. Use soft shadows, realistic textures, and shallow depth of field. Shot with a 50mm lens, low-key lighting, motion trail effect. Keep the face as it is same, Keep Ratio 9:16">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhAxkKzS99K6ODj4FeQ02_8lRdWfNfyWI3JDMvjnPc0mekGQWMvon6Ejb3NDW04_LeM-r0tZQrGmYZGsz77loWt2Xv2AOY4QWLMP6zoNue3CMPF2gdifGv84KUxvE5AjalRpWdlejrOoK6RMeEpA2yVU2NEgfg87RzueyJTkLYiHT73ZN_ELRuxboyB0Cs/s1600/photo_2025-06-13_16-30-30.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="A charismatic realistic villain (Age around 21
+years old) in High quality style sits confidently
+on an ornate, gothic-style throne. He wears a
+sleek emerald green suit with floral brooches,
+black gloves, and holds a futuristic silver
+mask in one hand.
+Keep Ratio 9:16">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjVqmW84lzxAypAno03MNsTXv7265VdTWmBoTO-bJpUeX2zWo3ppxIHStCMSksz8_1kfhPgPxLVd0D7uCjGt4OUvOJM66h4K5cpXdlKKgHibFrWyFGgj9sG9nGQz1wsFscbAlew2513XZYVyjSNF42xHhFHa9ORmzaX-7jMDrlpLjobtiVAEX21Zi_UPm8/s1600/photo_2025-06-13_16-32-02.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="arms crossed. To my left, Cristiano
+Ronaldo resting shoulder to shoulder with me in a black suit with Real Madrid Jersey.The city is empty and dramatic. Moody lighting with a 35mm film look. Shallow depth of field, sharp focus on Me and
+Ronaldo.we are watching the iphone
+camera. Keep my face same. The pic
+should look like a iphone clicked raw
+image. Aspect ratio 9:16">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjke_JZq0a2JH3ZkRUx9ZkMx2I0hbU-qxaPVbaKdpwqRmfuhlGUDKM0vUJ7D9uBbnWTtIcOFa8m_zjkE8b3DA_RcVuc2rd9YjZ1OyJuPxQF5Jhz-SoyfPM7MlLGkYaL_SEI89kZ3FMQ20AT_94g_CPBmisaNWxN0vgqnHrl6i5cAZ8va2F806yKTQRSo04/s1600/photo_2025-06-10_00-21-03.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Create a dramatic, low-light portrait of a person standing against a black background. The person is holding a newspaper labeled 'LATEST NEWS', which is partially on fire at one corner, with blue flames and a faint smoke trail. The fire should be stylized and visually striking. The lighting on the person should be moody and cinematic, primarily from the blue fire, casting blue highlights and shadows across the face and hands. The subject should wear a black shirt and layered silver chains for a bold, modern look. The expression should be serious and contemplative as the person looks down at the burning newspaper. The atmosphere should be intense and mysterious.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj1SOMBLM8j1kqnBUQhtToFxdHOxE72uvtuuLTQ6RFLN-_XbFeSKuKNqUAdEcAX4lsc5D2_zTiG4zxNRbOiwwcaiq15JvNMNifL3X0Ztg1R03e3DwXeWEQJVPPwZkfvAxUXOWQzUcgg03XW3-22Zv46TV3hyxK4rmFlU-fVYdi-2QkPHpsPNeyZcSo3-WE/s1600/photo_2025-06-06_15-14-43.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description=" Use the uploaded photo of a young South Asian man in his twenties with short, slightly messy hair and medium-dark skin tone as the face reference. Place him in a futuristic, dimly lit control room inspired by the Squid Game series. The background features glowing red and blue LED panels, walls lined with monitors displaying surreal playground arenas and geometric structures.
+
+
+
+Dress him in a sharp black overcoat layered over a black turtleneck, portraying the elite and mysterious Game Master of the games. Use cinematic lighting with dramatic shadows to enhance his facial features. The expression should be serious and commanding, as if he is orchestrating a dangerous game.
+
+The atmosphere should feel secretive, powerful, and tense—perfect for a Squid Game-themed universe.">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgQdh08mWCVmcgAcmvZDqz8qOn9y7TCHiqmYblbROvQOwNHaWizbr73VZESpbipnbdkYpDpsEJOFdHYprroUp_2xwmbcKmh1jnztsD1qYz8_GYp9qITwngjI-ZgF19evvq1eAaJBFixHXgI7YaY6XP_UlADlirn9wXeaO8LSt55hYHvag7JrVS5jnT7lHA/s1600/photo_2025-06-13_16-37-33.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Cinematic overhead shot of me standing still a brick city sidesalk, wearing a dark oversized blazer, motion-blurred crowd rushes past around me moody lighting 35mm film look Shallow depth of field, sharp focus on me.
+Ration potrait 4:3">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjDGVOK7VnqmbzthSVjNohNnIQt7IhwsgdXt6obPQqF3p6fWF0Np0Dmh5HLK1qXSoMZ9rLQUwNEyGsZMmoa_lx__EWcSWfbOruo15S1Wa-ZhaAV1XQKEJCLgjuJxC8wbvimMIJG53AhXkQTDYZafxrKUOwoxG6dF1e2dLt7AruVYAx44IhpYJM-ulWbwoE/s1600/photo_2025-06-13_16-39-13.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Create a realistic digital photo of me (from the uploaded image) standing beside Virat Kohli against a solid red studio background. We are both smiling and holding the Indian Premier League (IPL) championship trophy together in the center.
+
+I am wearing a red RCB-style T-shirt that says 'IPL CHAMPIONS 2025' in bold black letters. Virat Kohli is also wearing an RCB 'CHAMPIONS 2025' shirt with the official RCB logo.
+
+The trophy is large, golden, and shiny with intricate details, placed prominently between us. Make the lighting and shadows look like a professional studio photo. Both of us should look proud and happy. Ensure my face is accurately matched to the uploaded image">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEioojs1rVm4o5YiSjk-kA2mb9EyE0Nc8QeTuXL7PcMFeRtZyq0wLhgJXdSwXyfdvRVgK-tKsT7OGDeefcR8vGNaMN1uqWEuWtolUMjPodM44rru5lWaL6kn-Svnzpao6N-2vaXDGb-tzO6fKYqv5zm4Plm762wZ6kXEdPwYKWqW6p8SSKRQUNLw1PgEwKs/s1600/photo_2025-06-04_20-05-35.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="A cinematic portrait of a young man with short messy hair, wearing a red and black checkered shirt, sitting in a dark lounge with neon blue lighting. He is holding a glass of whiskey in his right hand, arm slightly raised, and looking to the side with a calm, confident expression. A vibrant neon blue rim light outlines his head and shoulders from behind, casting a dramatic glow. The background is dark, moody, and filled with bokeh lights. At the bottom of the image, glowing fog swirls in blue tones. Large glowing text at the bottom says 'KRISHNA' in bold futuristic neon font. No halo or circle behind the head. Emphasize a side angle pose and cinematic depth with heavy contrast, soft blur in the background, and digital painting style">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiEXH_KISXUegpVLgEcHC_jabcEaalQbEIvXVV2QkkU3hrGsy8y1ME38ZdT05h5y_ltBhC0SVMA6-XMfwMYJOEufGxua8B1t9fn8vnWFQOK70e1jsXe6SxEVeTcCkmTtrptxAkMiSGc2x3jXYsqIMiSviExnkXIqGH4P99l6vhvNoT4RtKDXXAKp8OhTHA/s1600/photo_2025-06-10_00-21-19.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+<div class="card" data-description="Cinematic fronthead shot of me
+standing holding my money heist
+mask covering half of my face giving
+Badass Looks or action , Wearing A
+red outfit from money heist series,
+People behind me running and
+scared, background with moody
+lightning 35mm film look Shallow
+depth of field, sharp focus on
+and show the people a Little bit.
+Ratio potrait 4:3">
+      <div class="card-inner">
+        <div class="card-front">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEii3nAg56IvCm5N2BEtzRqu4mVeEG5H7-3R5oZj0Ph1bxM4BgrBWdBb6mA34gR9WQSzMUEyIeZPucSfN7_jEPVMsM5ScGSd-o9NZ_dA4OSdcg2fM_FD4dqID6kWtUgecNzcjIUqpJh9Yxdxb4_4-D2xyWk6OywftSSKaVHW7aZuM4-HXNtNuwC14Ck20xg/s1600/photo_2025-06-13_14-44-31.jpg" alt="Movie 2"/>
+        </div>
+        <div class="card-back">
+        <div class="description"></div>
+
+          <button class="copy-btn">Copy Chatgpt Promt</button>
+        </div>
+      </div>
+    </div>
+
+
+    </div>
+
+  <div class="popup" id="popup">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+ <p style="font-size: 1.1rem; font-weight: bold; text-align: center;">
+ 
+  🎬 இலவச தமிழ் திரைப்படங்களை பதிவிறக்கம் செய்ய  விரும்புகிறீர்களா?
+</p>
+
+
+<ul style="text-align: left; font-size: 0.95rem; line-height: 1.5;">
+  <li>✅ No ads or popups</li>
+  <li>✅ No redirection </li>
+  <li>✅ Simple & fast download </li>
+  <li>✅ Mobile-friendly </li>
+  <li>✅ 100% free Tamil movies</li>
+</ul>
+
+<p style="text-align: center; font-weight: bold;">
+  👉 <a href="https://moviesaro.netlify.app" target="_blank" style="color: #4b2e0e;">Visit Now </a>
+</p>
+<br/>
+<br/>
+<div class="telegram-center-wrapper">
+  <a href="https://telegram.me/+V8nUElyN93U1ZTBl" target="_self" class="telegram-glow-btn" aria-label="Join us on Telegram">
+    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram" class="telegram-icon" />
+  </a>
+</div>
+
+  </div>
+
+ <script>
+  document.querySelectorAll('.card').forEach(card => {
+    const inner = card.querySelector('.card-inner');
+    const desc = card.querySelector('.description');
+    const copyBtn = card.querySelector('.copy-btn');
+
+    card.addEventListener('click', () => {
+      const isFlipped = card.classList.contains('flipped');
+      const popup = document.getElementById('popup');
+      const fill = document.getElementById('progress-fill');
+
+      if (isFlipped) {
+        // Flip back to front
+        card.classList.remove('flipped');
+        popup.style.display = 'none'; // hide popup immediately
+        return;
+      }
+
+      // Flip to back
+      card.classList.add('flipped');
+
+      // Restart progress animation
+      fill.style.animation = 'none';
+      void fill.offsetWidth; // force reflow to restart animation
+      fill.style.animation = 'fillProgress 10s linear forwards';
+
+      // Show popup
+      popup.style.display = 'block';
+
+      // Reset description and button state
+      copyBtn.classList.remove('enabled');
+      copyBtn.disabled = true;
+      desc.classList.remove('visible');
+
+      // Set timeout to reveal description & enable button
+      setTimeout(() => {
+        // Ensure the card is still flipped before enabling
+        if (card.classList.contains('flipped')) {
+          popup.style.display = 'none';
+          desc.classList.add('visible');
+          copyBtn.classList.add('enabled');
+          copyBtn.disabled = false;
+        }
+      }, 8000);
+    });
+
+    copyBtn.addEventListener('click', () => {
+      if (!copyBtn.classList.contains('enabled')) return;
+      const text = card.dataset.description;
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => (copyBtn.textContent = 'Copy Description'), 1500);
+      });
+    });
+  });
+</script>
+
+
+
+</html>
